@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<context:component-scan base-package="edu.freshen.action,edu.freshen.dao.impl"></context:component-scan>
+	
+	
+	<!-- 配置数据库连接池 -->
+	<bean id="dataSource" 
+		class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
+		<property name="user" value="root"/>
+		<property name="password" value="123456"/>
+ 	<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/world"/>  
+		<!--<property name="jdbcUrl" value="jdbc:mysql://ahvczidchfvo.mysql.sae.sina.com.cn:10468/world"/>
+		-->	
+		<property name="maxPoolSize" value="10"/>
+		<property name="minPoolSize" value="2"/>
+		<property name="initialPoolSize" value="2"/>
+		<property name="maxIdleTime" value="8"/>
+	</bean>
+
+	<!-- SessionFactory工厂 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="annotatedClasses">
+			<list>
+				<value>edu.freshen.entity.City</value>
+				<value>edu.freshen.entity.UserInfo</value>
+				<value>edu.freshen.entity.DbVersion</value>
+				<value>edu.freshen.entity.Student</value>
+				<value>edu.freshen.entity.Department</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>  
+			    <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>  
+			    <prop key="hibernate.format_sql">true</prop>  
+			</props>
+		</property>
+
+	</bean>
+	
+	<!-- 配置Service 层bean -->
+	<bean id="cityService" class="edu.freshen.service.CityService" scope="prototype">
+		<property name="cityDao" ref="cityDao"></property>
+		<property name="dbDao" ref="dbVersionDao"></property>
+	</bean>
+	<bean id="userInfoService" class="edu.freshen.service.UserInfoService" scope="prototype">
+		<property name="userInfoDao" ref="userInfoDao"></property>
+	</bean>
+	<bean id="dbVersionService" class="edu.freshen.service.DbVersionService" scope="prototype">
+		<property name="dbVersionDao" ref="dbVersionDao"></property>
+	</bean>
+	<bean id="jxlService" class="edu.freshen.service.JxlService" scope="prototype">
+		<property name="cityService" ref="cityService"></property>
+		<property name="sf" ref="sessionFactory"></property>
+	</bean>
+	
+	
+	<!-- 事务管理配置 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- 声明事务 -->
+	<tx:advice id="tx" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" isolation="DEFAULT" propagation="REQUIRED"  />
+			<tx:method name="delete*"  isolation="DEFAULT" propagation="REQUIRED"   />
+			<tx:method name="update*"   isolation="DEFAULT" propagation="REQUIRED"  />
+			<tx:method name="*"  read-only="true"  />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut expression="execution(* edu.freshen.service.*.*(..))" id="serTx"/>
+		<aop:advisor advice-ref="tx" pointcut-ref="serTx"/>
+	</aop:config>
+
+</beans>

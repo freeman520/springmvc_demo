@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<constant name="struts.i18n.encoding" value="UTF-8"></constant>
+	<package name="mypg" extends="json-default">
+		
+		<default-action-ref name="notFound" />
+   
+	
+		<!-- 配置异常页面 -->
+		<global-results>
+			<result name="error000">error/error.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping result="error" exception="java.lang.Exception"></exception-mapping>
+		</global-exception-mappings>
+	
+		<action name="notFound">
+	    	<result>/error/404.jsp</result>
+	   	</action>
+	
+		<!-- city Action配置信息 -->
+		<action name="queryCityAct" class="cityAction"
+			method="queryCity">
+			<result name="success">WEB-INF/pages/main.jsp</result>
+			<result name="cityjson" type="json">
+				<param name="root">citys</param>
+			</result>
+		</action>
+		<action name="deleteCityAct" class="cityAction"
+			method="deleteCity">
+			<result name="success" type="chain">
+				<param name="actionName">queryCityAct</param>
+			</result>
+		</action>
+		<action name="updateCityAct" class="cityAction"
+			method="updateCity">
+			<result name="success" type="chain">
+				<param name="actionName">queryCityAct</param>
+			</result>
+		</action>
+		<action name="insertCityAct" class="cityAction"
+			method="insertCity">
+			<result name="success" type="chain">
+				<param name="actionName">queryCityAct</param>
+			</result>
+		</action>
+		<!-- UserInfo Action配置信息 -->
+		<action name="registUserAct" class="userInfoAction"
+		method="registUser">
+			<result name="success" type="json">
+				<param name="root">state</param>
+			</result>
+		</action>
+		<action name="updateUserAct" class="userInfoAction"
+		method="updateUser">
+			<result name="success" type="json">
+				<param name="root">state</param>
+			</result>
+		</action>
+		<action name="loginUserAct" class="userInfoAction"
+		method="loginUser">
+			<result name="success" type="json">
+				<param name="root">userInfo</param>
+			</result>
+		</action>
+		<!-- 配置 DbVersionAction -->
+		<action name="dbVerAct" class="dbVersionAction">
+			<result name="success" type="json">
+				<param name="root">dbVersion</param>
+			</result>
+		</action>
+	
+		<!-- 配置JxlAction，下载Excel文件和上传Excel文件 -->
+		<action name="outputJxlAct" class="jxlAction"
+		method="outputJxl">
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="contentDisposition">filename="test.xls"</param>
+			</result>
+		</action>
+		<action name="inputJxlAct" class="jxlAction"
+		method="inputJxl">
+			<result name="success" type="json">
+				<param name="root">msg</param>
+			</result>
+		</action>
+		<!-- 配置DocAction，提供生成word文档的功能 -->
+		<action name="docAct" class="docAction">
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				<param name="contentType">application/vnd.ms-word</param>
+				<param name="contentDisposition">filename=${fileName}</param>
+			</result>
+		</action>
+	
+		<action name="testPro" class="UserInfoAction"
+		 method="testProj">
+		 	<result name="success" type="json"></result>
+		 </action>
+	
+	</package>
+
+</struts>    
