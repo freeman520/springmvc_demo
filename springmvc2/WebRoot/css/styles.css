@@ -1,0 +1,53 @@
+@CHARSET "UTF-8";
+*{
+	margin: 0px;
+	padding: 0px;
+}
+#container{
+	width: 960px;
+	margin: 10px auto 0px;
+}
+#datagrid{
+	border: 1px solid #999;
+}
+#datagrid td,th{
+	border: 1px solid #999;
+	padding: 5px;
+}
+#datagrid tr:nth-child(even){
+	background-color: #6EE;
+}
+#datagrid tr:hover{
+	background-color: #66E;
+	color: #EEE;
+}
+#container h1{
+	text-align: center;
+	text-shadow:#888 10px 10px 5px;
+	margin-bottom: 20px;
+}
+#pageBox{
+	margin-top: 8px;
+}
+#pageBox p a{
+	text-decoration: none;
+	margin-left: 10px;
+}
+#editBox fieldset{
+	padding: 8px;
+}
+#editBox fieldset input{
+	margin:5px 12px 5px 0px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
